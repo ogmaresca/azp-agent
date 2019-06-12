@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "azp-agent.fullname" . | quote }}
+  labels:
+    {{- include "azp-agent.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports: []
+  selector:
+    {{- include "azp-agent.selector" . | nindent 4 }}

@@ -1,0 +1,124 @@
+# Default values for azp-agent.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+# OrderedReady | Parallel
+podManagementPolicy: OrderedReady
+replicaCount: 3
+revisionHistoryLimit: 25
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    partition: 0
+
+azp:
+  workspace: /workspace
+  # https://dev.azure.com/azureAccountName
+  url: ''
+  token: ''
+  pool: 'kubernetes-azp-agents'
+  agentName: '$(POD_NAME)'
+  image:
+    #repository: gmaresca/azp-agent
+    #tag: ubuntu-16.04-standard-docker-18.09
+    repository: microsoft/vsts-agent
+    tag: ubuntu-16.04-docker-18.06.1-ce-standard
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 0.5
+      memory: 2Gi
+    limits:
+      cpu: 1
+      memory: 8Gi
+  persistence:
+    enabled: true
+    name: workspace
+    labels: {}
+    annotations: {}
+    accessModes:
+    - ReadWriteOnce
+    selector: {}
+    storageClassName: 'default'
+    storage: 50Gi
+    #storageLimit: 500Gi
+  lifecycle: {}
+  extraEnv: []
+  #- name: ENV_VAR
+  #  value: SomeValue
+  #  secret: true
+  #  valueFrom: {}
+  extraVolumeMounts: []
+
+docker:
+  enabled: true
+  image:
+    repository: docker
+    tag: 18.06.3-dind
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 0.5
+      memory: 2Gi
+    limits:
+      cpu: 2
+      memory: 16Gi
+  persistence:
+    enabled: false
+    # Set to the same name as azp.persistence.name to use a single PersistentVolumeTemplate
+    name: docker
+    labels: {}
+    annotations: {}
+    accessModes:
+    - ReadWriteOnce
+    selector: {}
+    storageClassName: 'default'
+    storage: 50Gi
+    #storageLimit: 500Gi
+  lifecycle: {}
+  extraEnv: []
+  #- name: ENV_VAR
+  #  value: SomeValue
+  #  secret: true
+  #  valueFrom: {}
+  extraVolumeMounts: []
+
+
+imagePullSecrets: []
+
+labels: {}
+annotations: {}
+
+podLabels: {}
+podAnnotations: {}
+
+pdb:
+  enabled: true
+  minAvailable: 50%
+  #maxUnavailable: 50%
+
+extraVolumes: []
+extraVolumeClaimTemplates: []
+
+#dnsPolicy: ClusterFirst
+dnsConfig: {}
+
+restartPolicy: Always
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+securityContext: {}
+
+hostNetwork: false
+
+initContainers: []
+
+sidecars: []

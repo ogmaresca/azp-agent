@@ -1,0 +1,4 @@
+Installs Azure Pipeline Agents in Kubernetes.
+
+See https://github.com/microsoft/vsts-agent-docker for the VSTS image files.
+See the documentation from Microsoft at https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops for the updated start.sh script.
