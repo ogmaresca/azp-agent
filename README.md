@@ -42,7 +42,7 @@ When adding extra environment variables, you can set `azp.extraEnv[x].secret=tru
 | `azp.resources.requests.memory`       | The memory requests of the agent.                                       | 2Gi                                     |
 | `azp.resources.limits.cpu`            | The CPU limits of the agent.                                            | 1                                       |
 | `azp.resources.limits.memory`         | The memory limits of the agent.                                         | 8Gi                                     |
-| `azp.persistence.enabled`             | Whether to create a PersistentVolume for the workspace.                 | `true`                                  |
+| `azp.persistence.enabled`             | Whether to create a PersistentVolume for the workspace.                 | `false`                                 |
 | `azp.persistence.name`                | The name of the volume for the workspace.                               | workspace                               |
 | `azp.persistence.labels`              | Labels to add to the PersistentVolume for the workspace.                | `{}`                                    |
 | `azp.persistence.accessModes`         | Access modes for the PersistentVolume for the workspace.                | `[ "ReadWriteOnce" ]`                   |
@@ -61,7 +61,7 @@ When adding extra environment variables, you can set `azp.extraEnv[x].secret=tru
 | `docker.resources.requests.memory`    | The memory requests of Docker.                                          | 2Gi                                     |
 | `docker.resources.limits.cpu`         | The CPU limits of Docker.                                               | 2                                       |
 | `docker.resources.limits.memory`      | The memory limits of Docker.                                            | 16Gi                                    |
-| `docker.persistence.enabled`          | Whether to create a PersistentVolume for Docker.                        | `true`                                  |
+| `docker.persistence.enabled`          | Whether to create a PersistentVolume for Docker.                        | `false`                                 |
 | `docker.persistence.name`             | The name of the volume for Docker.                                      | workspace                               |
 | `docker.persistence.labels`           | Labels to add to the PersistentVolume for Docker.                       | `{}`                                    |
 | `docker.persistence.accessModes`      | Access modes for the PersistentVolume for Docker.                       | `[ "ReadWriteOnce" ]`                   |
@@ -70,6 +70,7 @@ When adding extra environment variables, you can set `azp.extraEnv[x].secret=tru
 | `docker.persistence.storage`          | The requested capacity of the PersistentVolume for Docker.              | `50Gi`                                  |
 | `docker.persistence.storageLimit`     | The capacity limit of the PersistentVolume for Docker.                  | `null`                                  |
 | `docker.lifecycle`                    | Lifecycle (postStart, preStop) for Docker.                              | `{}`                                    |
+| `docker.clean`                        | Whether to run a postStart command to prune containers and images.      | `true`                                  |
 | `docker.extraEnv`                     | Extra environment variables to add to Docker.                           | `[]`                                    |
 | `docker.extraVolumeMounts`            | Extra volume mounts to add to Docker.                                   | `[]`                                    |
 | `nameOverride`                        | An override value for the name.                                         | ``                                      |
