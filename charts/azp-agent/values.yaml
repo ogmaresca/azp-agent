@@ -36,7 +36,7 @@ azp:
       cpu: 1
       memory: 8Gi
   persistence:
-    enabled: true
+    enabled: false
     name: workspace
     labels: {}
     annotations: {}
@@ -80,6 +80,9 @@ docker:
     storage: 50Gi
     #storageLimit: 500Gi
   lifecycle: {}
+  # Prune containers and images on start, if persistence is enabled
+  # Not compatible if the lifecycle.postStart.exec.command is set
+  clean: true
   extraEnv: []
   #- name: ENV_VAR
   #  value: SomeValue

@@ -17,6 +17,8 @@ Then use this command to install it:
 helm upgrade --install --namespace=azp azp-agent azp-agent/azp-agent --set 'azp.url=https://dev.azure.com/accountName,azp.token=AzureDevopsAccessToken'
 ```
 
+If Docker is enabled, the cluster must be capable of running privileged containers.
+
 # Configuration
 
 The values `azp.token` and `azp.url` are required to install the chart.
