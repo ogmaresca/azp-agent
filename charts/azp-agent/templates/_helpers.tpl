@@ -35,8 +35,8 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "azp-agent.selector" -}}
-name: {{ include "azp-agent.name" . }}
-chart: {{ include "azp-agent.chart" . }}
+name: {{ include "azp-agent.fullname" . }}
+release: {{ .Release.Name }}
 {{- end -}}
 
 {{/*
@@ -44,7 +44,7 @@ Common labels
 */}}
 {{- define "azp-agent.labels" -}}
 {{ include "azp-agent.selector" . }}
-release: {{ .Release.Name }}
+chart: {{ include "azp-agent.chart" . }}
 {{- if .Chart.AppVersion }}
 version: {{ .Chart.AppVersion | quote }}
 {{- end }}

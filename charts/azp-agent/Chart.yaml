@@ -1,6 +1,6 @@
 apiVersion: v1
 description: A Helm chart for Azure Pipeline Agents
 name: azp-agent
-version: 1.0.1
+version: 1.0.2
 urls:
 - https://github.com/ggmaresca/azp-agent

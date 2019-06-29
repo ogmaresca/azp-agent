@@ -47,11 +47,8 @@ spec:
           value: {{ .Values.azp.workspace | quote }}
         - name: AZP_URL
           value: {{ .Values.azp.url | required "The Azure Devops URL is required!" | quote }}
-        - name: AZP_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: {{ $fullname }}
-              key: azp-token
+        - name: AZP_TOKEN_FILE
+          value: /azp/.token
         - name: AZP_POOL
           value: {{ .Values.azp.pool | quote }}
         - name: AZP_AGENT_NAME
@@ -92,6 +89,10 @@ spec:
         - name: scripts
           mountPath: "/azp/start.sh"
           subPath: "start.sh"
+          readOnly: true
+        - name: token
+          mountPath: "/azp/.token"
+          subPath: "azp-token"
           readOnly: true
         {{- if .Values.azp.extraVolumeMounts }}
           {{- .Values.azp.extraVolumeMounts | toYaml | nindent 8 }}
@@ -184,6 +185,9 @@ spec:
         configMap:
           name: {{ $fullname }}
           defaultMode: 0554
+      - name: token
+        secret:
+          secretName: {{ $fullname }}
       {{- if .Values.extraVolumes }}
         {{- .Values.extraVolumes | toYaml | nindent 8 }}
       {{- end }}
