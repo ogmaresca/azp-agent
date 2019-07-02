@@ -104,6 +104,12 @@ pdb:
   minAvailable: 50%
   #maxUnavailable: 50%
 
+scaling:
+  enabled: false
+  min: 3
+  max: 3
+  #cpu: 25
+
 extraVolumes: []
 extraVolumeClaimTemplates: []
 
