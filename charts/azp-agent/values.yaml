@@ -106,8 +106,47 @@ pdb:
 
 scaling:
   enabled: false
-  min: 3
+  min: 1
   max: 3
+  rate: 10s
+  # trace, debug, info, warn, error, fatal, panic
+  logLevel: info
+
+  scaleDown:
+    max: 1
+    delay: 10s
+
+  image:
+    repository: docker.io/gmaresca/azp-agent-autoscaler
+    tag: 1.0.3
+    pullPolicy: IfNotPresent
+  
+  resources:
+    requests:
+      cpu: 0.05
+      memory: 16Mi
+    limits:
+      cpu: 0.1
+      memory: 32Mi
+
+  liveness:
+    failureThreshold: 3
+    initialDelaySeconds: 1
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  
+  strategy:
+    type: Recreate
+  
+  pdb:
+    enabled: false
+  
+  lifecycle: []
+  sidecars: []
+  initContainers: []
+
+  # Note: if cpu is enabled, the autoscaler deployment will be disabled
   #cpu: 25
 
 extraVolumes: []

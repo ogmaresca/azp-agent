@@ -1,0 +1,18 @@
+{{- if and .Values.scaling.enabled (empty .Values.scaling.cpu) }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "azp-agent.fullname" . }}-autoscaler
+  labels:
+    {{- include "azp-agent.labels" . | nindent 4 }}
+    component: autoscaler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "azp-agent.fullname" . }}-autoscaler
+  namespace: {{ .Release.Namespace }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "azp-agent.fullname" . }}-autoscaler
+  namespace: {{ .Release.Namespace }}
+{{- end }}

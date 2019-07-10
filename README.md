@@ -27,6 +27,11 @@ If `docker.persistence.enabled` is `true` and `docker.persistence.name` is equal
 
 When adding extra environment variables, you can set `azp.extraEnv[x].secret=true` to add the environment variable to the secret. This option requires `value` to be set instead of `valueFrom`.
 
+If `scaling.enabled` is set to true, then:
+
+* If `scaling.cpu` is set, a HorizontalPodAutoscaler will be created with the CPU scaling defined.
+* If `scaling.cpu` is not set, [azp-agent-autoscaler](https://github.com/ggmaresca/azp-agent-autoscaler) will get deployed in the release.
+
 | Parameter                             | Description                                                             | Default                                 |
 | ------------------------------------- | ----------------------------------------------------------------------- | --------------------------------------- |
 | `replicaCount`                        | Number of agents to deploy.                                             | 3                                       |
@@ -73,6 +78,31 @@ When adding extra environment variables, you can set `azp.extraEnv[x].secret=tru
 | `docker.clean`                        | Whether to run a postStart command to prune containers and images.      | `true`                                  |
 | `docker.extraEnv`                     | Extra environment variables to add to Docker.                           | `[]`                                    |
 | `docker.extraVolumeMounts`            | Extra volume mounts to add to Docker.                                   | `[]`                                    |
+| `scaling.enabled`                     | Whether to enable autoscaling                                           | `true`                                  |
+| `scaling.min`                         | The minimum number of agent pods.                                       | 1                                       |
+| `scaling.max`                         | The maximum number of agent pods.                                       | 3                                       |
+| `scaling.rate`                        | The autoscaler period to poll Azure Devops and the Kubernetes API       | 10s                                     |
+| `scaling.logLevel`                    | Autoscaler log level (trace, debug, info, warn, error, fatal, panic)    | info                                    |
+| `scaling.scaleDown.max`               | The maximum number of pods allowed to scale down at a time              | 1                                       |
+| `scaling.scaleDown.delay`             | The time to wait before being allowed to scale down again               | 10s                                     |
+| `scaling.image.repository`            | The Docker Hub repository of the agent autoscaler.                      | docker.io/gmaresca/azp-agent-autoscaler |
+| `scaling.image.tag`                   | The image tag of the agent autoscaler.                                  | 1.0.3                                   |
+| `scaling.image.pullPolicy`            | The image pull policy of the agent autoscaler.                          | IfNotPresent                            |
+| `scaling.resources.requests.cpu`      | The CPU requests of the agent autoscaler.                               | 0.05                                    |
+| `scaling.resources.requests.memory`   | The memory requests of the agent autoscaler.                            | 16Mi                                    |
+| `scaling.resources.limits.cpu`        | The CPU limits of the agent autoscaler.                                 | 0.1                                     |
+| `scaling.resources.limits.memory`     | The memory limits of the agent autoscaler.                              | 32Mi                                    |
+| `scaling.liveness.failureThreshold`   | The failure threshold for the autoscaler liveness probe.                | 3                                       |
+| `scaling.liveness.initialDelaySeconds`| The initial delay for the autoscaler liveness probe.                    | 1                                       |
+| `scaling.liveness.periodSeconds`      | The autoscaler liveness probe period.                                   | 10                                      |
+| `scaling.liveness.successThreshold`   | The success threshold for the autoscaler liveness probe.                | 1                                       |
+| `scaling.liveness.timeoutSeconds`     | The timeout for the autoscaler liveness probe.                          | 1                                       |
+| `scaling.strategy.type`               | The Autoscaler Deployment Update Strategy type.                         | Recreate                                |
+| `scaling.pdb.enabled`                 | Whether to enable a PodDisruptionBudget for the autoscaler.             | `false`                                 |
+| `scaling.initContainers`              | Init containers to add for the autoscaler.                              | `[]`                                    |
+| `scaling.lifecycle`                   | Lifecycle (postStart, preStop) for the autoscaler.                      | `{}`                                    |
+| `scaling.sidecars`                    | Additional containers to add for the autoscaler.                        | `[]`                                    |
+| `scaling.cpu`                         | Whether to a HorizontalPodAutoscaler instead of `azp-agent-autoscaler`  | ``                                      |
 | `nameOverride`                        | An override value for the name.                                         | ``                                      |
 | `fullnameOverride`                    | An override value for the full name.                                    | ``                                      |
 | `podManagementPolicy`                 | The order that pods are created (`OrderedReady` or `Parallel`).         | OrderedReady                            |
@@ -86,7 +116,7 @@ When adding extra environment variables, you can set `azp.extraEnv[x].secret=tru
 | `podAnnotations`                      | Annotations to add to the Pods.                                         | `{}`                                    |
 | `pdb.enabled`                         | Whether to enable a PodDisruptionBudget.                                | `true`                                  |
 | `pdb.minAvailable`                    | The minimum number of pods to keep. Incompatible with `maxUnavailable`. | 50%                                     |
-| `pdb.maxUnavailable`                  | The maximum unvailable pods. Incompatible with `minAvailable`.          | 50%                                     |
+| `pdb.maxUnavailable`                  | The maximum unvailable pods. Incompatible with `minAvailable`.          | ``                                      |
 | `extraVolumes`                        | Extra volumes to add to the Pod.                                        | `[]`                                    |
 | `extraVolumeClaimTemplates`           | Extra volumes claim templates to add to the StatefulSet.                | `[]`                                    |
 | `dnsPolicy`                           | The pod DNS policy.                                                     | `null`                                  |

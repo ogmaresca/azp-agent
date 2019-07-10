@@ -1,0 +1,131 @@
+{{- if and .Values.scaling.enabled (empty .Values.scaling.cpu) }}
+{{ $fullname := (include "azp-agent.fullname" .) }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullname }}-autoscaler
+  labels:
+    {{- include "azp-agent.labels" . | nindent 4 }}
+    component: autoscaler
+spec:
+  minReadySeconds: 0
+  replicas: 1
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  {{- with .Values.scaling.strategy }}
+  strategy:
+    {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "azp-agent.selector" . | nindent 6 }}
+      component: autoscaler
+  template:
+    metadata:
+      labels:
+        {{- include "azp-agent.labels" . | nindent 8 }}
+        component: autoscaler
+    spec:
+      {{- if .Values.scaling.image.pullSecrets }}
+      imagePullSecrets:
+        {{- .Values.imagePullSecrets | toYaml | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ $fullname }}-autoscaler
+      containers:
+      - name: azp-agent-autoscaler
+        image: "{{ .Values.scaling.image.repository }}:{{ .Values.scaling.image.tag }}"
+        imagePullPolicy: {{ .Values.scaling.image.pullPolicy }}
+        env:
+        - name: AZP_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ $fullname }}
+              key: azp-token
+        args:
+        - '--log-level={{ .Values.scaling.logLevel }}'
+        - '--min={{ .Values.scaling.min }}'
+        - '--max={{ .Values.scaling.max }}'
+        - '--rate={{ .Values.scaling.rate }}'
+        - '--scale-down={{ .Values.scaling.scaleDown.delay }}'
+        - '--scale-down-max={{ .Values.scaling.scaleDown.max }}'
+        - '--type=StatefulSet'
+        - '--name={{ $fullname }}'
+        - '--namespace={{ .Release.Namespace }}'
+        - '--token=$(AZP_TOKEN)'
+        - '--url={{ .Values.azp.url | required "The Azure Pipeline URL is required!" }}'
+        - '--port=10101'
+        ports:
+        - containerPort: 10101
+          name: health
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: health
+            scheme: HTTP
+          failureThreshold: {{ .Values.scaling.liveness.failureThreshold }}
+          initialDelaySeconds: {{ .Values.scaling.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.scaling.liveness.periodSeconds }}
+          successThreshold: {{ .Values.scaling.liveness.successThreshold }}
+          timeoutSeconds: {{ .Values.scaling.liveness.timeoutSeconds }}
+        {{- with .Values.scaling.resources }}
+        resources:
+          {{- . | toYaml | nindent 10 }}
+        {{- end }}
+        {{- if .Values.scaling.lifecycle }}
+        lifecycle:
+          {{- .Values.scaling.lifecycle | toYaml | nindent 10 }}
+        {{- end }}
+      
+      {{- if .Values.scaling.sidecars }}
+        {{- .Values.scaling.sidecars | toYaml | nindent 6 }}
+      {{- end }}
+      
+      {{- if .Values.scaling.initContainers }}
+      initContainers:
+        {{- .Values.scaling.initContainers | toYaml | nindent 8 }}
+      {{- end }}
+      
+      {{- if .Values.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ .Values.activeDeadlineSeconds }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy }}
+      {{- end }}
+      {{ if .Values.dnsConfig }}
+      dnsConfig:
+        {{- .Values.dnsConfig | toYaml | nindent 8 }}
+      {{- end }}
+      restartPolicy: {{ .Values.restartPolicy }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+        {{- .Values.nodeSelector | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity:
+        {{- .Values.affinity | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations:
+        {{- .Values.tolerations | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.securityContext }}
+      securityContext:
+        {{- .Values.securityContext | toYaml | nindent 8 }}
+      {{- end }}
+      hostNetwork: {{ .Values.hostNetwork }}
+      {{- if .Values.priority }}
+      priority: {{ .Value.priority }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Value.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.priority }}
+      priority: {{ .Values.priority }}
+      {{- end }}
+      {{- if .Values.runtimeClassName }}
+      runtimeClassName: {{ .Value.runtimeClassName | quote }}
+      {{- end }}
+      {{- if .Values.schedulerName }}
+      schedulerName: {{ .Value.schedulerName | quote }}
+      {{- end }}
+{{- end }}

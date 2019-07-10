@@ -28,6 +28,12 @@ template-docker-lifecycle-fail:
 template-env-secret:
 	helm template charts/azp-agent --set 'azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,azp.extraEnv[0].name=SUPER_SECRET_PASSWORD,azp.extraEnv[0].value=P@$$W0RD,azp.extraEnv[0].secret=true'
 
+template-autoscaler:
+	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,scaling.enabled=true
+
+template-hpa:
+	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,scaling.enabled=true,scaling.cpu=50%
+
 test:
 	make lint && \
 	make template && \
@@ -38,7 +44,12 @@ test:
 	make template-docker-no-clean && \
 	make template-docker-lifecycle && \
 	! make template-docker-lifecycle-fail && \
-	make template-env-secret
+	make template-env-secret && \
+	make template-autoscaler && \
+	make template-hpa
+
+install:
+	helm upgrade --debug --install azp-agent charts/azp-agent --set azp.url=${AZURE_DEVOPS_URL},azp.token=${AZURE_DEVOPS_TOKEN},azp.pool=${AZURE_DEVOPS_POOl},replicaCount=1,scaling.enabled=true,scaling.logLevel=trace
 
 package:
 	helm package charts/azp-agent -d charts && \

@@ -4,6 +4,7 @@ metadata:
   name: {{ include "azp-agent.fullname" . }}
   labels:
     {{- include "azp-agent.labels" . | nindent 4 }}
+    component: agent
 data:
   "start.sh": |-
     {{- .Files.Get "scripts/start.sh" | nindent 4 }}

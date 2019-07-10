@@ -1,0 +1,23 @@
+{{- if and .Values.scaling.enabled (empty .Values.scaling.cpu) }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "azp-agent.fullname" . }}-autoscaler
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "azp-agent.labels" . | nindent 4 }}
+    component: autoscaler
+rules:
+- apiGroups: ["apps"]
+  resources: ["statefulsets"]
+  verbs: ["get"]
+- apiGroups: ["apps"]
+  resources: ["statefulsets/scale"]
+  verbs: ["get", "update"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list"]
+- apiGroups: ["autoscaling"]
+  resources: ["horizontalpodautoscalers"]
+  verbs: ["list"]
+{{- end }}

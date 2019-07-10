@@ -5,6 +5,7 @@ metadata:
   name: {{ include "azp-agent.fullname" . | quote }}
   labels:
     {{- include "azp-agent.labels" . | nindent 4 }}
+    component: agent
 spec:
   maxReplicas: {{ .Values.scaling.max }}
   minReplicas: {{ .Values.scaling.min }}

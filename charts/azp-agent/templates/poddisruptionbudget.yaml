@@ -5,6 +5,7 @@ metadata:
   name: {{ include "azp-agent.fullname" . | quote }}
   labels:
     {{- include "azp-agent.labels" . | nindent 4 }}
+    component: agent
 spec:
   {{- if .Values.pdb.minAvailable }}
   minAvailable: {{ .Values.pdb.minAvailable }}
@@ -14,4 +15,5 @@ spec:
   selector:
     matchLabels:
       {{- include "azp-agent.selector" . | nindent 6 }}
+      component: agent
 {{- end }}
