@@ -21,7 +21,7 @@ If Docker is enabled, the cluster must be capable of running privileged containe
 
 # Configuration
 
-The values `azp.token` and `azp.url` are required to install the chart.
+The values `azp.token` and `azp.url` are required to install the chart. `azp.token` is your Personal Acces token. This token requires Agent Pools (Read & Manage) permission. `azp.url` is your Azure Devops URL, usually `https://dev.azure.com/<Your Organization>`.
 
 If `docker.persistence.enabled` is `true` and `docker.persistence.name` is equal to `azp.persistence.name`, then the AZP workspace and the Docker workspace will use a share volume.
 
@@ -31,6 +31,8 @@ If `scaling.enabled` is set to true, then:
 
 * If `scaling.cpu` is set, a HorizontalPodAutoscaler will be created with the CPU scaling defined.
 * If `scaling.cpu` is not set, [azp-agent-autoscaler](https://github.com/ggmaresca/azp-agent-autoscaler) will get deployed in the release.
+
+You can find the limit on parallel jobs by going to your project settings in Azure Devops, clicking on Parallel jobs, and viewing your limit of self-hosted jobs.
 
 | Parameter                             | Description                                                             | Default                                 |
 | ------------------------------------- | ----------------------------------------------------------------------- | --------------------------------------- |
@@ -102,7 +104,7 @@ If `scaling.enabled` is set to true, then:
 | `scaling.initContainers`              | Init containers to add for the autoscaler.                              | `[]`                                    |
 | `scaling.lifecycle`                   | Lifecycle (postStart, preStop) for the autoscaler.                      | `{}`                                    |
 | `scaling.sidecars`                    | Additional containers to add for the autoscaler.                        | `[]`                                    |
-| `scaling.cpu`                         | Whether to a HorizontalPodAutoscaler instead of `azp-agent-autoscaler`  | ``                                      |
+| `scaling.cpu`                         | HorizontalPodAutoscaler CPU theshold.                                   | ``                                      |
 | `nameOverride`                        | An override value for the name.                                         | ``                                      |
 | `fullnameOverride`                    | An override value for the full name.                                    | ``                                      |
 | `podManagementPolicy`                 | The order that pods are created (`OrderedReady` or `Parallel`).         | OrderedReady                            |
