@@ -34,6 +34,9 @@ template-autoscaler:
 template-hpa:
 	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,scaling.enabled=true,scaling.cpu=50%
 
+template-existing-secret:
+	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,scaling.enabled=true,azp.existingSecret=test-secret,azp.existingSecretKey=test-secret-key
+
 test:
 	make lint && \
 	make template && \
@@ -46,7 +49,8 @@ test:
 	! make template-docker-lifecycle-fail && \
 	make template-env-secret && \
 	make template-autoscaler && \
-	make template-hpa
+	make template-hpa && \
+	make template-existing-secret
 
 install:
 	helm upgrade --debug --install azp-agent charts/azp-agent --set azp.url=${AZURE_DEVOPS_URL},azp.token=${AZURE_DEVOPS_TOKEN},azp.pool=${AZURE_DEVOPS_POOl},replicaCount=1,scaling.enabled=true,scaling.logLevel=trace

@@ -32,6 +32,13 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
+Create the name of the autoscaler service account to use
+*/}}
+{{- define "azp-agent.autoscaler.serviceAccountName" -}}
+{{ .Values.scaling.serviceAccount.create | ternary (printf "%s-autoscaler" (include "azp-agent.fullname" .)) (.Values.scaling.serviceAccount.name | default "default") }}
+{{- end -}}
+
+{{/*
 Common labels
 */}}
 {{- define "azp-agent.selector" -}}

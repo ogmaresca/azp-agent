@@ -76,9 +76,11 @@ spec:
           value: {{ .value | required (printf "A value is required for environment variable %s" .name) | quote }}
           {{- end }}
         {{- end }}
+        {{- if .Values.azp.useStartupScript }}
         workingDir: /azp
         command:
         - '/azp/start.sh'
+        {{- end }}
         {{- with .Values.azp.resources }}
         resources:
           {{- . | toYaml | nindent 10 }}
@@ -184,16 +186,25 @@ spec:
       - name: {{ .Values.docker.persistence.name | quote }}
         emptyDir: {}
       {{- end }}
+      {{- if .Values.azp.useStartupScript }}
       - name: scripts
         configMap:
           name: {{ $fullname }}
           defaultMode: 0554
+      {{- end }}
       - name: token
         secret:
+          {{- if and (not .Values.azp.existingSecret) (not .Values.azp.existingSecretKey) }}
           secretName: {{ $fullname }}
           items:
           - key: azp-token
             path: azp-token
+          {{- else }}
+          secretName: {{ .Values.azp.existingSecret | quote }}
+          items:
+          - key: {{ .Values.azp.existingSecretKey | quote }}
+            path: azp-token
+          {{- end }}
       {{- if .Values.extraVolumes }}
         {{- .Values.extraVolumes | toYaml | nindent 8 }}
       {{- end }}

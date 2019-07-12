@@ -38,10 +38,13 @@ You can find the limit on parallel jobs by going to your project settings in Azu
 | ------------------------------------- | ----------------------------------------------------------------------- | --------------------------------------- |
 | `replicaCount`                        | Number of agents to deploy.                                             | 3                                       |
 | `azp.workspace`                       | The workspace folder location.                                          | /workspace                              |
-| `azp.url`                             | The Azure Devops account URL. ex: https://dev.azure.com/accountName     | ``                                      |
-| `azp.token`                           | The Azure Devops access token.                                          | ``                                      |
+| `azp.url`                             | The Azure Devops account URL. ex: https://dev.azure.com/Organization    |                                         |
+| `azp.token`                           | The Azure Devops access token.                                          |                                         |
+| `azp.existingSecret`                  | An existing secret that contains the token.                             |                                         |
+| `azp.existingSecretKey`               | The key of the existing secret that contains the token.                 |                                         |
 | `azp.pool`                            | The name of the pipeline pool.                                          | kubernetes-azp-agents                   |
 | `azp.agentName`                       | The name of the agent.                                                  | $(POD_NAME)                             |
+| `azp.useStartupScript`                | If true, mount the start.sh script from Microsoft as the run command.   | `true`                                  |
 | `azp.image.repository`                | The Docker Hub repository of the agent.                                 | microsoft/vsts-agent                    |
 | `azp.image.tag`                       | The image tag of the agent.                                             | ubuntu-16.04-docker-18.06.1-ce-standard |
 | `azp.image.pullPolicy`                | The image pull policy of the agent.                                     | IfNotPresent                            |
@@ -85,8 +88,8 @@ You can find the limit on parallel jobs by going to your project settings in Azu
 | `scaling.max`                         | The maximum number of agent pods.                                       | 3                                       |
 | `scaling.rate`                        | The autoscaler period to poll Azure Devops and the Kubernetes API       | 10s                                     |
 | `scaling.logLevel`                    | Autoscaler log level (trace, debug, info, warn, error, fatal, panic)    | info                                    |
-| `scaling.scaleDown.max`               | The maximum number of pods allowed to scale down at a time              | 1                                       |
-| `scaling.scaleDown.delay`             | The time to wait before being allowed to scale down again               | 10s                                     |
+| `scaling.scaleDownMax`                | The maximum number of pods allowed to scale down at a time              | 1                                       |
+| `scaling.scaleDownDelay`              | The time to wait before being allowed to scale down again               | 10s                                     |
 | `scaling.image.repository`            | The Docker Hub repository of the agent autoscaler.                      | docker.io/gmaresca/azp-agent-autoscaler |
 | `scaling.image.tag`                   | The image tag of the agent autoscaler.                                  | 1.0.3                                   |
 | `scaling.image.pullPolicy`            | The image pull policy of the agent autoscaler.                          | IfNotPresent                            |
@@ -99,14 +102,19 @@ You can find the limit on parallel jobs by going to your project settings in Azu
 | `scaling.liveness.periodSeconds`      | The autoscaler liveness probe period.                                   | 10                                      |
 | `scaling.liveness.successThreshold`   | The success threshold for the autoscaler liveness probe.                | 1                                       |
 | `scaling.liveness.timeoutSeconds`     | The timeout for the autoscaler liveness probe.                          | 1                                       |
-| `scaling.strategy.type`               | The Autoscaler Deployment Update Strategy type.                         | Recreate                                |
+| `scaling.updateStrategy.type`         | The Autoscaler Deployment Update Strategy type.                         | Recreate                                |
 | `scaling.pdb.enabled`                 | Whether to enable a PodDisruptionBudget for the autoscaler.             | `false`                                 |
+| `scaling.rbac.create`                 | Whether to create Role Based Access for the autoscaler.                 | `true`                                  |
+| `scaling.serviceAccount.create`       | Whether to create a service account for the autoscaler.                 | `true`                                  |
+| `scaling.serviceAccount.name`         | The name of an existing SA `scaling.serviceAccount.create` is false.    |                                         |
+| `scaling.securityContext`             | The autoscaler pod security context.                                    | `{}`                                    |
+| `scaling.restartPolicy`               | The autoscaler pod restart policy.                                      | Always                                  |
 | `scaling.initContainers`              | Init containers to add for the autoscaler.                              | `[]`                                    |
 | `scaling.lifecycle`                   | Lifecycle (postStart, preStop) for the autoscaler.                      | `{}`                                    |
 | `scaling.sidecars`                    | Additional containers to add for the autoscaler.                        | `[]`                                    |
-| `scaling.cpu`                         | HorizontalPodAutoscaler CPU theshold.                                   | ``                                      |
-| `nameOverride`                        | An override value for the name.                                         | ``                                      |
-| `fullnameOverride`                    | An override value for the full name.                                    | ``                                      |
+| `scaling.cpu`                         | HorizontalPodAutoscaler CPU theshold.                                   |                                         |
+| `nameOverride`                        | An override value for the name.                                         |                                         |
+| `fullnameOverride`                    | An override value for the full name.                                    |                                         |
 | `podManagementPolicy`                 | The order that pods are created (`OrderedReady` or `Parallel`).         | OrderedReady                            |
 | `revisionHistoryLimit`                | Number of StatefulSet versions to keep.                                 | 25                                      |
 | `updateStrategy.type`                 | The StatefulSet Update Strategy type.                                   | RollingUpdate                           |
@@ -118,7 +126,7 @@ You can find the limit on parallel jobs by going to your project settings in Azu
 | `podAnnotations`                      | Annotations to add to the Pods.                                         | `{}`                                    |
 | `pdb.enabled`                         | Whether to enable a PodDisruptionBudget.                                | `true`                                  |
 | `pdb.minAvailable`                    | The minimum number of pods to keep. Incompatible with `maxUnavailable`. | 50%                                     |
-| `pdb.maxUnavailable`                  | The maximum unvailable pods. Incompatible with `minAvailable`.          | ``                                      |
+| `pdb.maxUnavailable`                  | The maximum unvailable pods. Incompatible with `minAvailable`.          |                                         |
 | `extraVolumes`                        | Extra volumes to add to the Pod.                                        | `[]`                                    |
 | `extraVolumeClaimTemplates`           | Extra volumes claim templates to add to the StatefulSet.                | `[]`                                    |
 | `dnsPolicy`                           | The pod DNS policy.                                                     | `null`                                  |

@@ -11,7 +11,7 @@ spec:
   minReadySeconds: 0
   replicas: 1
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
-  {{- with .Values.scaling.strategy }}
+  {{- with .Values.scaling.updateStrategy }}
   strategy:
     {{- . | toYaml | nindent 4 }}
   {{- end }}
@@ -29,7 +29,7 @@ spec:
       imagePullSecrets:
         {{- .Values.imagePullSecrets | toYaml | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ $fullname }}-autoscaler
+      serviceAccountName: {{ include "azp-agent.autoscaler.serviceAccountName" . }}
       containers:
       - name: azp-agent-autoscaler
         image: "{{ .Values.scaling.image.repository }}:{{ .Values.scaling.image.tag }}"
@@ -38,15 +38,20 @@ spec:
         - name: AZP_TOKEN
           valueFrom:
             secretKeyRef:
+              {{- if and (not .Values.azp.existingSecret) (not .Values.azp.existingSecretKey) }}
               name: {{ $fullname }}
               key: azp-token
+              {{- else }}
+              name: {{ .Values.azp.existingSecret | quote }}
+              key: {{ .Values.azp.existingSecretKey | quote }}
+              {{- end }}
         args:
         - '--log-level={{ .Values.scaling.logLevel }}'
         - '--min={{ .Values.scaling.min }}'
         - '--max={{ .Values.scaling.max }}'
         - '--rate={{ .Values.scaling.rate }}'
-        - '--scale-down={{ .Values.scaling.scaleDown.delay }}'
-        - '--scale-down-max={{ .Values.scaling.scaleDown.max }}'
+        - '--scale-down={{ .Values.scaling.scaleDownDelay }}'
+        - '--scale-down-max={{ .Values.scaling.scaleDownMax }}'
         - '--type=StatefulSet'
         - '--name={{ $fullname }}'
         - '--namespace={{ .Release.Namespace }}'
@@ -95,7 +100,7 @@ spec:
       dnsConfig:
         {{- .Values.dnsConfig | toYaml | nindent 8 }}
       {{- end }}
-      restartPolicy: {{ .Values.restartPolicy }}
+      restartPolicy: {{ .Values.scaling.restartPolicy }}
       {{- if .Values.nodeSelector }}
       nodeSelector:
         {{- .Values.nodeSelector | toYaml | nindent 8 }}
@@ -108,9 +113,9 @@ spec:
       tolerations:
         {{- .Values.tolerations | toYaml | nindent 8 }}
       {{- end }}
-      {{- if .Values.securityContext }}
+      {{- if .Values.scaling.securityContext }}
       securityContext:
-        {{- .Values.securityContext | toYaml | nindent 8 }}
+        {{- .Values.scaling.securityContext | toYaml | nindent 8 }}
       {{- end }}
       hostNetwork: {{ .Values.hostNetwork }}
       {{- if .Values.priority }}
