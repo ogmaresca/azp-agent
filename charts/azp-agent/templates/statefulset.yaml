@@ -91,13 +91,19 @@ spec:
           {{- if $combinePVT }}
           subPath: 'workspace'
           {{- end }}
+        {{- if .Values.azp.useStartupScript }}
         - name: scripts
           mountPath: "/azp/start.sh"
           subPath: "start.sh"
           readOnly: true
+        {{- end }}
         - name: token
           mountPath: "/azp/.token"
+          {{- if and (not .Values.azp.existingSecret) (not .Values.azp.existingSecretKey) }}
           subPath: "azp-token"
+          {{- else }}
+          subPath: {{ .Values.azp.existingSecretKey | quote }}
+          {{- end }}
           readOnly: true
         {{- if .Values.azp.extraVolumeMounts }}
           {{- .Values.azp.extraVolumeMounts | toYaml | nindent 8 }}
@@ -203,7 +209,7 @@ spec:
           secretName: {{ .Values.azp.existingSecret | quote }}
           items:
           - key: {{ .Values.azp.existingSecretKey | quote }}
-            path: azp-token
+            path: {{ .Values.azp.existingSecretKey | quote }}
           {{- end }}
       {{- if .Values.extraVolumes }}
         {{- .Values.extraVolumes | toYaml | nindent 8 }}
