@@ -52,6 +52,9 @@ test:
 	make template-hpa && \
 	make template-existing-secret
 
+test-versions:
+	bash -c 'for chart in charts/*.tgz; do helm lint $$chart; done'
+
 install:
 	helm upgrade --debug --install azp-agent charts/azp-agent --set azp.url=${AZURE_DEVOPS_URL},azp.token=${AZURE_DEVOPS_TOKEN},azp.pool=${AZURE_DEVOPS_POOl},replicaCount=1,scaling.enabled=true,scaling.logLevel=trace
 
