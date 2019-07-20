@@ -279,7 +279,7 @@ spec:
 - metadata:
     name: {{ .data.name | quote }}
     labels:
-      {{- include "azp-agent.labels" .root | nindent 6 }}
+      {{- include "azp-agent.selector" .root | nindent 6 }}
       {{- include "azp-agent.stringDict" .data.labels | nindent 6 }}
     {{- if .data.annotations }}
     annotations:
