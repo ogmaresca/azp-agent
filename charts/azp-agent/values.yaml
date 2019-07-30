@@ -38,11 +38,11 @@ azp:
   ## If true, use the start.sh script from Microsoft
   ## It will create a ConfigMap with the script, set the working directory, and use the script as the command
   ## If false, the image should already have this script in it
-  useStartupScript: true
+  useStartupScript: false
   
   image:
-    repository: microsoft/vsts-agent
-    tag: ubuntu-16.04-docker-18.06.1-ce-standard
+    repository: docker.io/gmaresca/azure-pipeline-agent
+    tag: ubuntu-18.04
     pullPolicy: IfNotPresent
   
   resources:

@@ -19,6 +19,12 @@ helm upgrade --install --namespace=azp azp-agent azp-agent/azp-agent --set 'azp.
 
 If Docker is enabled, the cluster must be capable of running privileged containers.
 
+The Docker Image used can be found [here](https://github.com/ggmaresca/azp-agent-docker-image). If you wish to use the deprecated [VSTS agent Docker image](https://github.com/microsoft/vsts-agent-docker) provided by Microsoft, add the following argument to the Helm command:
+
+``` bash
+--set 'azp.image.repository=microsoft/vsts-agent,azp.image.tag=ubuntu-16.04-docker-18.06.1-ce-standard,azp.useStartupScript=true'
+```
+
 # Configuration
 
 The values `azp.token` and `azp.url` are required to install the chart. `azp.token` is your Personal Acces token. This token requires Agent Pools (Read & Manage) permission. `azp.url` is your Azure Devops URL, usually `https://dev.azure.com/<Your Organization>`.
@@ -44,9 +50,9 @@ You can find the limit on parallel jobs by going to your project settings in Azu
 | `azp.existingSecretKey`                    | The key of the existing secret that contains the token.                       |                                         |
 | `azp.pool`                                 | The name of the pipeline pool.                                                | kubernetes-azp-agents                   |
 | `azp.agentName`                            | The name of the agent.                                                        | $(POD_NAME)                             |
-| `azp.useStartupScript`                     | If true, mount the start.sh script from Microsoft as the run command.         | `true`                                  |
-| `azp.image.repository`                     | The Docker Hub repository of the agent.                                       | microsoft/vsts-agent                    |
-| `azp.image.tag`                            | The image tag of the agent.                                                   | ubuntu-16.04-docker-18.06.1-ce-standard |
+| `azp.useStartupScript`                     | If true, mount the start.sh script from Microsoft as the run command.         | `false`                                 |
+| `azp.image.repository`                     | The Docker Hub repository of the agent.                                       | docker.io/gmaresca/azure-pipeline-agent |
+| `azp.image.tag`                            | The image tag of the agent.                                                   | ubuntu-18.04                            |
 | `azp.image.pullPolicy`                     | The image pull policy of the agent.                                           | IfNotPresent                            |
 | `azp.resources.requests.cpu`               | The CPU requests of the agent.                                                | 0.5                                     |
 | `azp.resources.requests.memory`            | The memory requests of the agent.                                             | 2Gi                                     |

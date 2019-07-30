@@ -37,6 +37,9 @@ template-hpa:
 template-existing-secret:
 	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,scaling.enabled=true,azp.existingSecret=test-secret,azp.existingSecretKey=test-secret-key
 
+template-vsts:
+	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,azp.image.repository=microsoft/vsts-agent,azp.image.tag=ubuntu-16.04-docker-18.06.1-ce-standard,azp.useStartupScript=true
+
 test:
 	make lint && \
 	make template && \
@@ -50,7 +53,8 @@ test:
 	make template-env-secret && \
 	make template-autoscaler && \
 	make template-hpa && \
-	make template-existing-secret
+	make template-existing-secret && \
+	make template-vsts
 
 test-versions:
 	bash -c 'for chart in charts/*.tgz; do helm lint $$chart; done'
