@@ -1,0 +1,43 @@
+{{- if and .Values.scaling.enabled (empty .Values.scaling.cpu) .Values.scaling.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "azp-agent.fullname" . }}-autoscaler
+  namespace: {{ .Values.scaling.serviceMonitor.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "azp-agent.labels" . | nindent 4 }}
+    component: autoscaler
+    {{- include "azp-agent.stringDict" .Values.scaling.serviceMonitor.labels | nindent 4 }}
+spec:
+  jobLabel: {{ template "azp-agent.fullname" . }}-autoscaler
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  endpoints:
+  - port: metrics
+    interval: {{ .Values.scaling.serviceMonitor.interval | default .Values.scaling.rate }}
+    path: /metrics
+    targetPort: health
+    scheme: http
+    {{- if .Values.scaling.serviceMonitor.honorLabels }}
+    honorLabels: true
+    {{- end }}
+    {{- with .Values.scaling.serviceMonitor.metricRelabelings }}
+    metricRelabelings:
+      {{- . | toYaml | nindent 6 }}
+    {{- end }}
+    {{- with .Values.scaling.serviceMonitor.relabelings }}
+    relabelings:
+      {{- . | toYaml | nindent 6 }}
+    {{- end }}
+  podTargetLabels:
+  - name
+  - release
+  {{- range $key, $value := .Values.scaling.podLabels }}
+  - {{ $key | quote }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "azp-agent.selector" . | nindent 6 }}
+      component: autoscaler
+{{- end }}

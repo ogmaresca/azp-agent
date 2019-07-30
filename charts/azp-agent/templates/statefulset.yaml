@@ -88,9 +88,14 @@ spec:
         volumeMounts:
         - name: {{ .Values.azp.persistence.name | quote }}
           mountPath: {{ .Values.azp.workspace | quote }}
-          {{- if $combinePVT }}
-          subPath: 'workspace'
+          {{- if or $combinePVT .Values.azp.persistence.toolCache }}
+          subPath: workspace
           {{- end }}
+        {{- if .Values.azp.persistence.toolCache }}
+        - name: {{ .Values.azp.persistence.name | quote }}
+          mountPath: /opt/hostedtoolcache
+          subPath: hostedtoolcache
+        {{- end }}  
         {{- if .Values.azp.useStartupScript }}
         - name: scripts
           mountPath: "/azp/start.sh"

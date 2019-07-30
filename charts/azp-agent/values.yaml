@@ -1,6 +1,6 @@
-# Default values for azp-agent.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+## Default values for azp-agent.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
 
 nameOverride: ""
 fullnameOverride: ""
@@ -10,34 +10,34 @@ podManagementPolicy: OrderedReady
 replicaCount: 3
 revisionHistoryLimit: 25
 
-# The update strategy of the StatefulSet
+## The update strategy of the StatefulSet
 updateStrategy:
   type: RollingUpdate
   rollingUpdate:
     partition: 0
 
-# Values for the Azure Pipeline Agents container
+## Values for the Azure Pipeline Agents container
 azp:
-  # The path in the container for the pipeline agents workspace
+  ## The path in the container for the pipeline agents workspace
   workspace: /workspace
-  # The Azure Devops URL, ex: https://dev.azure.com/azureAccountName
+  ## The Azure Devops URL, ex: https://dev.azure.com/azureAccountName
   url: ''
-  # The name of the agent pool in Azure Devops
+  ## The name of the agent pool in Azure Devops
   pool: 'kubernetes-azp-agents'
-  # The name of the agents. Defaults to the pod name
+  ## The name of the agents. Defaults to the pod name
   agentName: '$(POD_NAME)'
 
-  # The Azure Devops token. Needs Agent Pools (Read & Manage) permission
+  ## The Azure Devops token. Needs Agent Pools (Read & Manage) permission
   token: ''
 
-  # If you already have a secret with the Azure Devops token, define its name here
+  ## If you already have a secret with the Azure Devops token, define its name here
   existingSecret: ''
-  # If you already have a secret with the Azure Devops token, define key of the secret here
+  ## If you already have a secret with the Azure Devops token, define key of the secret here
   existingSecretKey: ''
 
-  # If true, use the start.sh script from Microsoft
-  # It will create a ConfigMap with the script, set the working directory, and use the script as the command
-  # If false, the image should already have this script in it
+  ## If true, use the start.sh script from Microsoft
+  ## It will create a ConfigMap with the script, set the working directory, and use the script as the command
+  ## If false, the image should already have this script in it
   useStartupScript: true
   
   image:
@@ -54,29 +54,31 @@ azp:
       memory: 8Gi
   
   persistence:
-    # Enable a PersistentVolumeClaimTemplate for the agents
+    ## Enable a PersistentVolumeClaimTemplate for the agents
     enabled: false
     name: workspace
-    # Labels to add to the PersistentVolumeClaims
+    ## Add /opt/hostedtoolcache to volume
+    toolCache: true
+    ## Labels to add to the PersistentVolumeClaims
     labels: {}
-    # Annotations to add to the PersistentVolumeClaims
+    ## Annotations to add to the PersistentVolumeClaims
     annotations: {}
-    # The volume access mode
+    ## The volume access mode
     accessModes:
     - ReadWriteOnce
-    # Label selector to use to find PersistentVolumes
+    ## Label selector to use to find PersistentVolumes
     selector: {}
-    # The storage class for the PersistentVolumeClaims
+    ## The storage class for the PersistentVolumeClaims
     storageClassName: 'default'
-    # The storage size to request
+    ## The storage size to request
     storage: 50Gi
-    # If set, the storage limit to set on the PersistentVolumeClaims
+    ## If set, the storage limit to set on the PersistentVolumeClaims
     #storageLimit: 500Gi
   
   lifecycle: {}
 
-  # Extra environmental variables to add
-  # If secret is set to true, the value will be added to the secret
+  ## Extra environmental variables to add
+  ## If secret is set to true, the value will be added to the secret
   extraEnv: []
   #- name: ENV_VAR
   #  value: SomeValue
@@ -86,9 +88,8 @@ azp:
   # Extra volume mounts to add to the pipeline agents container
   extraVolumeMounts: []
 
-# Values for the Docker sidecar
 docker:
-  # Whether to enable the Docker sidecar
+  ## Whether to enable the Docker sidecar
   enabled: true
 
   image:
@@ -105,35 +106,35 @@ docker:
       memory: 16Gi
 
   persistence:
-    # Enable a PersistentVolumeClaimTemplate for Docker
+    ## Enable a PersistentVolumeClaimTemplate for Docker
     enabled: false
-    # Set to the same name as azp.persistence.name to use a single PersistentVolumeTemplate
-    # for both the agents and the Docker sidecar
+    ## Set to the same name as azp.persistence.name to use a single PersistentVolumeTemplate
+    ## for both the agents and the Docker sidecar
     name: docker
-    # Labels to add to the PersistentVolumeClaims
+    ## Labels to add to the PersistentVolumeClaims
     labels: {}
-    # Annotations to add to the PersistentVolumeClaims
+    ## Annotations to add to the PersistentVolumeClaims
     annotations: {}
-    # The volume access mode
+    ## The volume access mode
     accessModes:
     - ReadWriteOnce
-    # Label selector to use to find PersistentVolumes
+    ## Label selector to use to find PersistentVolumes
     selector: {}
-    # The storage class for the PersistentVolumeClaims
+    ## The storage class for the PersistentVolumeClaims
     storageClassName: 'default'
-    # The storage size to request
+    ## The storage size to request
     storage: 50Gi
-    # If set, the storage limit to set on the PersistentVolumeClaims
+    ## If set, the storage limit to set on the PersistentVolumeClaims
     #storageLimit: 500Gi
   
   lifecycle: {}
 
-  # Prune containers and images on start, if persistence is enabled
-  # Not compatible if the lifecycle.postStart.exec.command is set
+  ## Prune containers and images on start, if persistence is enabled
+  ## Not compatible if the lifecycle.postStart.exec.command is set
   clean: true
 
-  # Extra environmental variables to add
-  # If secret is set to true, the value will be added to the secret
+  ## Extra environmental variables to add
+  ## If secret is set to true, the value will be added to the secret
   extraEnv: []
   #- name: ENV_VAR
   #  value: SomeValue
@@ -146,44 +147,44 @@ docker:
 
 imagePullSecrets: []
 
-# Labels to add to the agents StatefulSet
+## Labels to add to the agents StatefulSet
 labels: {}
-# Annotations to add to agents StatefulSet
+## Annotations to add to agents StatefulSet
 annotations: {}
 
-# Labels to add to the agent pods
+## Labels to add to the agent pods
 podLabels: {}
-# Annotations to add to the agent pods
+## Annotations to add to the agent pods
 podAnnotations: {}
 
 pdb:
-  # Enable a PodDisruptionBudget
+  ## Enable a PodDisruptionBudget
   enabled: true
   minAvailable: 50%
   #maxUnavailable: 50%
 
-# Values for autoscaling
+## Values for autoscaling
 scaling:
   enabled: false
 
-  # The minimum number of free agents that should exist
+  ## The minimum number of free agents that should exist
   min: 1
-  # The maximum number of agents allowed
+  ## The maximum number of agents allowed
   max: 3
 
-  # How often the Kubernetes and Azure Devops API should be polled
+  ## How often the Kubernetes and Azure Devops API should be polled
   rate: 10s
-  # trace, debug, info, warn, error, fatal, panic
+  ## trace, debug, info, warn, error, fatal, panic
   logLevel: info
 
-  # The limit to scale down each iteration
+  ## The limit to scale down each iteration
   scaleDownMax: 1
-  # How often to wait before another scale down is allowed
+  ## How often to wait before another scale down is allowed
   scaleDownDelay: 10s
 
   image:
     repository: docker.io/gmaresca/azp-agent-autoscaler
-    tag: 1.0.6
+    tag: 1.0.7
     pullPolicy: IfNotPresent
   
   resources:
@@ -194,8 +195,8 @@ scaling:
       cpu: 0.1
       memory: 32Mi
 
-  # Liveness probe values
-  # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes
+  ## Liveness probe values
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes
   liveness:
     failureThreshold: 3
     initialDelaySeconds: 1
@@ -207,70 +208,84 @@ scaling:
     type: Recreate
   
   pdb:
-    # Enable a PodDisruptionBudget for the autoscaler
+    ## Enable a PodDisruptionBudget for the autoscaler
     enabled: false
 
   rbac:
     create: true
-    # azp-agent-autoscaler needs to get the pool name from the agent's environment variables
-    # If the AZP_POOL environment variable comes from a configmap or a secret, enable this
+    ## azp-agent-autoscaler needs to get the pool name from the agent's environment variables
+    ## If the AZP_POOL environment variable comes from a configmap or a secret, enable this
     getConfigmaps: false
     getSecrets: false
 
   serviceAccount:
-    # Specifies whether a ServiceAccount should be created
+    ## Specifies whether a ServiceAccount should be created
     create: true
-    # The name of the ServiceAccount to use.
-    # If not set and create is true, a name is generated using the fullname template
+    ## The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the fullname template
     name:
   
-  # The autoscaler deployment restart policy
+  ## Create a Prometheus-Operator ServiceMonitor for the Autoscaler
+  ## Ref: https://github.com/helm/charts/blob/master/stable/prometheus-operator/templates/prometheus-operator/crd-servicemonitor.yaml
+  ## Requires having the chart stable/prometheus-operator installed
+  serviceMonitor:
+    enabled: false
+    #namespace: 
+    ## Labels to add to the PodMonitor
+    labels: {}
+    # honorLabels: true
+    #interval: 30s
+    metricRelabelings: []
+    relabelings: []
+
+  
+  ## The autoscaler deployment restart policy
   restartPolicy: Always
   
-  # Security Context policies for the autoscaler pod
+  ## Security Context policies for the autoscaler pod
   securityContext: {}
 
   lifecycle: []
 
-  # Additional containers to deploy in the autoscaler pod
+  ## Additional containers to deploy in the autoscaler pod
   sidecars: []
 
-  # Containers to run before the main autoscaler container starts
+  ## Containers to run before the main autoscaler container starts
   initContainers: []
   
-  # The CPU utilization value to scale on for the HorizontalPodAutoscaler
-  # Note: if cpu is enabled, the autoscaler deployment will be disabled
+  ## The CPU utilization value to scale on for the HorizontalPodAutoscaler
+  ## Note: if cpu is enabled, the autoscaler deployment will be disabled
   #cpu: 25
 
-# Additional volumes to add to the agents
+## Additional volumes to add to the agents
 extraVolumes: []
-# Additional volume claim templates to add to the agents
+## Additional volume claim templates to add to the agents
 extraVolumeClaimTemplates: []
 
 #dnsPolicy: ClusterFirst
 dnsConfig: {}
 
-# The deployment restart policy
+## The deployment restart policy
 restartPolicy: Always
 
-# Node labels selecting nodes to run on
-# Ref: https://kubernetes.io/docs/user-guide/node-selection/
+## Node labels selecting nodes to run on
+## Ref: https://kubernetes.io/docs/user-guide/node-selection/
 nodeSelector: {}
 
-# Node tolerations for scheduling to nodes with taints
-# Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+## Node tolerations for scheduling to nodes with taints
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 tolerations: []
 
 affinity: {}
 
-# Security Context policies for the pod
+## Security Context policies for the pod
 securityContext: {}
 
-# Whether to use the network of the host node
+## Whether to use the network of the host node
 hostNetwork: false
 
-# Containers to run before the main container(s) starts
+## Containers to run before the main container(s) starts
 initContainers: []
 
-# Additional containers to deploy in the pod
+## Additional containers to deploy in the pod
 sidecars: []

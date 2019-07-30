@@ -29,7 +29,7 @@ template-env-secret:
 	helm template charts/azp-agent --set 'azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,azp.extraEnv[0].name=SUPER_SECRET_PASSWORD,azp.extraEnv[0].value=P@$$W0RD,azp.extraEnv[0].secret=true'
 
 template-autoscaler:
-	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,scaling.enabled=true
+	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,scaling.enabled=true,scaling.serviceMonitor.enabled=true,scaling.pdb.enabled=true
 
 template-hpa:
 	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,scaling.enabled=true,scaling.cpu=50%
