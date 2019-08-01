@@ -172,7 +172,7 @@ spec:
               command:
               - sh
               - -c
-              - "docker container prune -f && docker image prune -a -f"
+              - "docker system prune -f"
           {{- else if .Values.docker.lifecycle.postStart }}
           postStart:
             {{- .Values.docker.lifecycle.postStart | toYaml | nindent 12 }}
