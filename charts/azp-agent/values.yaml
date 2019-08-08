@@ -26,7 +26,7 @@ azp:
   pool: 'kubernetes-azp-agents'
   ## The name of the agents. Defaults to the pod name
   agentName: '$(POD_NAME)'
-
+  
   ## The Azure Devops token. Needs Agent Pools (Read & Manage) permission
   token: ''
 
@@ -39,6 +39,9 @@ azp:
   ## It will create a ConfigMap with the script, set the working directory, and use the script as the command
   ## If false, the image should already have this script in it
   useStartupScript: false
+
+  ## The path of the Hosted Tool Cache
+  hostedToolCache: /opt/hostedtoolcache
   
   image:
     repository: docker.io/gmaresca/azure-pipeline-agent
@@ -57,8 +60,22 @@ azp:
     ## Enable a PersistentVolumeClaimTemplate for the agents
     enabled: false
     name: workspace
-    ## Add /opt/hostedtoolcache to volume
-    toolCache: true
+
+    ## Add /opt/hostedtoolcache/x to volume
+    toolCaches:
+    - helm
+    - kubectl
+    - kompose
+    - docker
+    - dncr ## .NET Core Runtime
+    - dncs ## .NET Core SDK
+    - NuGet
+    - VsTest
+    - node
+    - go
+    - ArtifactTool
+    - Duffle
+    
     ## Labels to add to the PersistentVolumeClaims
     labels: {}
     ## Annotations to add to the PersistentVolumeClaims

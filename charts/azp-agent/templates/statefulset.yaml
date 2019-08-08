@@ -56,6 +56,8 @@ spec:
           value: {{ .Values.azp.pool | quote }}
         - name: AZP_AGENT_NAME
           value: {{ .Values.azp.agentName | quote }}
+        - name: AGENT_TOOLSDIRECTORY
+          value: {{ .Values.azp.hostedToolCache | quote }}
         {{- if .Values.docker.enabled }}
         - name: DOCKER_HOST
           value: "tcp://localhost:2375"
@@ -88,13 +90,15 @@ spec:
         volumeMounts:
         - name: {{ .Values.azp.persistence.name | quote }}
           mountPath: {{ .Values.azp.workspace | quote }}
-          {{- if or $combinePVT .Values.azp.persistence.toolCache }}
+          {{- if or $combinePVT .Values.azp.persistence.toolCaches }}
           subPath: workspace
           {{- end }}
-        {{- if .Values.azp.persistence.toolCache }}
-        - name: {{ .Values.azp.persistence.name | quote }}
-          mountPath: /opt/hostedtoolcache
-          subPath: hostedtoolcache
+        {{- range .Values.azp.persistence.toolCaches }}
+          {{- if . }}
+        - name: {{ $.Values.azp.persistence.name | quote }}
+          mountPath: "{{ $.Values.azp.hostedToolCache }}/{{ . }}"
+          subPath: "hostedtoolcache/{{ . }}"
+          {{- end }}
         {{- end }}  
         {{- if .Values.azp.useStartupScript }}
         - name: scripts
