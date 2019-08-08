@@ -111,7 +111,7 @@ docker:
 
   image:
     repository: docker
-    tag: 18.06.3-dind
+    tag: 19.03.1-dind
     pullPolicy: IfNotPresent
   
   resources:
