@@ -60,12 +60,12 @@ spec:
         - '--port=10101'
         ports:
         - containerPort: 10101
-          name: health
+          name: metrics
           protocol: TCP
         livenessProbe:
           httpGet:
             path: /healthz
-            port: health
+            port: metrics
             scheme: HTTP
           failureThreshold: {{ .Values.scaling.liveness.failureThreshold }}
           initialDelaySeconds: {{ .Values.scaling.liveness.initialDelaySeconds }}

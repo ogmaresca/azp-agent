@@ -17,7 +17,7 @@ spec:
   - port: metrics
     interval: {{ .Values.scaling.serviceMonitor.interval | default .Values.scaling.rate }}
     path: /metrics
-    targetPort: health
+    targetPort: metrics
     scheme: http
     {{- if .Values.scaling.serviceMonitor.honorLabels }}
     honorLabels: true
@@ -33,6 +33,7 @@ spec:
   podTargetLabels:
   - name
   - release
+  - component
   {{- range $key, $value := .Values.scaling.podLabels }}
   - {{ $key | quote }}
   {{- end }}

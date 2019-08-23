@@ -9,10 +9,10 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: health
+  - name: metrics
     port: 10101
     protocol: TCP
-    targetPort: health
+    targetPort: metrics
   selector:
     {{- include "azp-agent.selector" . | nindent 4 }}
     component: autoscaler

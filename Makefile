@@ -29,7 +29,7 @@ template-env-secret:
 	helm template charts/azp-agent --set 'azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,azp.extraEnv[0].name=SUPER_SECRET_PASSWORD,azp.extraEnv[0].value=P@$$W0RD,azp.extraEnv[0].secret=true'
 
 template-autoscaler:
-	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,scaling.enabled=true,scaling.serviceMonitor.enabled=true,scaling.pdb.enabled=true
+	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,scaling.enabled=true,scaling.serviceMonitor.enabled=true,scaling.pdb.enabled=true,scaling.grafanaDashboard.enabled=true
 
 template-hpa:
 	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,scaling.enabled=true,scaling.cpu=50%
@@ -60,7 +60,7 @@ test-versions:
 	bash -c 'for chart in charts/*.tgz; do helm lint $$chart; done'
 
 install:
-	helm upgrade --debug --install azp-agent charts/azp-agent --set azp.url=${AZURE_DEVOPS_URL},azp.token=${AZURE_DEVOPS_TOKEN},azp.pool=${AZURE_DEVOPS_POOl},replicaCount=1,scaling.enabled=true,scaling.logLevel=trace
+	helm upgrade --debug --install azp-agent charts/azp-agent --set azp.url=${AZURE_DEVOPS_URL},azp.token=${AZURE_DEVOPS_TOKEN},azp.pool=${AZURE_DEVOPS_POOl},replicaCount=1,scaling.enabled=true,scaling.logLevel=trace,scaling.serviceMonitor.enabled=true,scaling.grafanaDashboard.enabled=true
 
 package:
 	helm package charts/azp-agent -d charts && \

@@ -201,7 +201,7 @@ scaling:
 
   image:
     repository: docker.io/gmaresca/azp-agent-autoscaler
-    tag: 1.0.7
+    tag: 1.0.8
     pullPolicy: IfNotPresent
   
   resources:
@@ -254,6 +254,11 @@ scaling:
     #interval: 30s
     metricRelabelings: []
     relabelings: []
+
+  grafanaDashboard:
+    enabled: false
+    labels:
+      grafana_dashboard: '1'
 
   
   ## The autoscaler deployment restart policy
