@@ -221,7 +221,7 @@ spec:
             path: {{ .Values.azp.existingSecretKey | quote }}
           {{- end }}
       {{- if .Values.extraVolumes }}
-        {{- .Values.extraVolumes | toYaml | nindent 8 }}
+        {{- .Values.extraVolumes | toYaml | nindent 6 }}
       {{- end }}
       
       {{- if .Values.initContainers }}
