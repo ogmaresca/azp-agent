@@ -2,6 +2,9 @@ lint:
 	helm lint charts/azp-agent
 
 template:
+	helm template charts/azp-agent --values example-helm-values.yaml
+
+template-default-values:
 	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl
 
 template-no-persistence:
@@ -43,6 +46,7 @@ template-vsts:
 test:
 	make lint && \
 	make template && \
+	make template-default-values && \
 	make template-no-persistence && \
 	make template-no-docker && \
 	make template-persistence && \

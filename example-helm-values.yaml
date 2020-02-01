@@ -1,0 +1,34 @@
+azp:
+  url: https://dev.azure.com/test
+  token: abc123def456ghi789jkl
+
+  persistence:
+    enabled: true
+    name: workspace
+
+docker:
+  enabled: true
+  persistence:
+    enabled: true
+    name: workspace
+
+rbac:
+  psp:
+    enabled: true
+serviceAccount:
+  create: true
+
+scaling:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+  grafanaDashboard:
+    enabled: true
+  pdb:
+    enabled: true
+  rbac:
+    enabled: true
+    psp:
+      enabled: true
+  serviceAccount:
+    enabled: true

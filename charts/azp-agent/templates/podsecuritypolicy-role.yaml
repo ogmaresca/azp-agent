@@ -1,0 +1,15 @@
+{{- if or .Values.rbac.psp.enabled .Values.rbac.psp.name }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "azp-agent.psp.rbacname" . }}
+  labels:
+    {{- include "azp-agent.labels" . | nindent 4 }}
+    component: agent
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs:     ['use']
+  resourceNames:
+  - {{ include "azp-agent.psp.name" . }}
+{{- end -}}

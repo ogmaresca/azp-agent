@@ -2,14 +2,14 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "azp-agent.fullname" . }}-autoscaler
+  name: {{ include "azp-agent.autoscaler.fullname" . }}
   namespace: {{ .Values.scaling.serviceMonitor.namespace | default .Release.Namespace }}
   labels:
     {{- include "azp-agent.labels" . | nindent 4 }}
     component: autoscaler
     {{- include "azp-agent.stringDict" .Values.scaling.serviceMonitor.labels | nindent 4 }}
 spec:
-  jobLabel: {{ template "azp-agent.fullname" . }}-autoscaler
+  jobLabel: {{ include "azp-agent.autoscaler.fullname" . }}
   namespaceSelector:
     matchNames:
     - {{ .Release.Namespace }}

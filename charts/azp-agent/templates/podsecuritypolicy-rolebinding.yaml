@@ -1,0 +1,17 @@
+{{- if or .Values.rbac.psp.enabled .Values.rbac.psp.name }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "azp-agent.psp.rbacname" . }}
+  labels:
+    {{- include "azp-agent.labels" . | nindent 4 }}
+    component: agent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "azp-agent.psp.rbacname" . }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "azp-agent.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end -}}

@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ include "azp-agent.fullname" . }}-autoscaler
+  name: {{ include "azp-agent.autoscaler.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "azp-agent.labels" . | nindent 4 }}

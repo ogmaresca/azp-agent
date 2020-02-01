@@ -2,7 +2,7 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "azp-agent.fullname" . }}-autoscaler
+  name: {{ include "azp-agent.autoscaler.fullname" . }}
   labels:
     {{- include "azp-agent.labels" . | nindent 4 }}
     component: autoscaler

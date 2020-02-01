@@ -1,9 +1,8 @@
 {{- if and .Values.scaling.enabled (empty .Values.scaling.cpu) }}
-{{ $fullname := (include "azp-agent.fullname" .) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $fullname }}-autoscaler
+  name: {{ include "azp-agent.autoscaler.fullname" . }}
   labels:
     {{- include "azp-agent.labels" . | nindent 4 }}
     component: autoscaler
@@ -39,7 +38,7 @@ spec:
           valueFrom:
             secretKeyRef:
               {{- if and (not .Values.azp.existingSecret) (not .Values.azp.existingSecretKey) }}
-              name: {{ $fullname }}
+              name: {{ include "azp-agent.fullname" . }}
               key: azp-token
               {{- else }}
               name: {{ .Values.azp.existingSecret | quote }}
@@ -53,7 +52,7 @@ spec:
         - '--scale-down={{ .Values.scaling.scaleDownDelay }}'
         - '--scale-down-max={{ .Values.scaling.scaleDownMax }}'
         - '--type=StatefulSet'
-        - '--name={{ $fullname }}'
+        - '--name={{ include "azp-agent.fullname" . }}'
         - '--namespace={{ .Release.Namespace }}'
         - '--token=$(AZP_TOKEN)'
         - '--url={{ .Values.azp.url | required "The Azure Pipeline URL is required!" }}'

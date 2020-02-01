@@ -36,7 +36,7 @@ spec:
       imagePullSecrets:
         {{- .Values.imagePullSecrets | toYaml | nindent 8 }}
       {{- end }}
-      
+      serviceAccountName: {{ include "azp-agent.autoscaler.serviceAccountName" . }}
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.azp.image.repository }}:{{ .Values.azp.image.tag }}"
@@ -121,6 +121,10 @@ spec:
         lifecycle:
           {{- .Values.azp.lifecycle | toYaml | nindent 10 }}
         {{- end }}
+        {{- if .Values.azp.securityContext }}
+        securityContext:
+          {{- .Values.azp.securityContext | toYaml | nindent 10 }}
+        {{- end }}
       
       {{- if .Values.docker.enabled }}
       - name: docker-daemon
@@ -144,8 +148,10 @@ spec:
           value: {{ .value | required (printf "A value is required for environment variable %s" .name) | quote }}
           {{- end }}
         {{- end }}
+        {{- if .Values.docker.securityContext }}
         securityContext:
-          privileged: true
+          {{- .Values.docker.securityContext | toYaml | nindent 10 }}
+        {{- end }}
         {{- with .Values.docker.resources }}
         resources:
           {{- . | toYaml | nindent 10 }}

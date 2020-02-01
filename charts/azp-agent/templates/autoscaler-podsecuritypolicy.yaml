@@ -1,0 +1,62 @@
+{{- if and .Values.scaling.enabled (empty .Values.scaling.cpu) .Values.scaling.rbac.psp.enabled }}
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: {{ include "azp-agent.autoscaler.psp.name" . }}
+  labels:
+    {{- include "azp-agent.labels" . | nindent 4 }}
+    component: autoscaler
+    {{- include "azp-agent.stringDict" .Values.scaling.rbac.psp.labels | nindent 4 }}
+  annotations:
+    {{- include "azp-agent.stringDict" .Values.scaling.rbac.psp.annotations | nindent 4 }}
+    {{- if .Values.scaling.rbac.psp.seccompProfile }}
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames:  {{ .Values.scaling.rbac.psp.seccompProfile | quote }}
+      {{- if ne .Values.scaling.rbac.psp.seccompProfile "*" }}
+    seccomp.security.alpha.kubernetes.io/defaultProfileName:  {{ .Values.scaling.rbac.psp.seccompProfile | quote }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.scaling.rbac.psp.appArmorProfile }}
+    apparmor.security.beta.kubernetes.io/allowedProfileNames:  {{ .Values.scaling.rbac.psp.appArmorProfile | quote }}
+      {{- if ne .Values.scaling.rbac.psp.appArmorProfile "*" }}
+    apparmor.security.beta.kubernetes.io/defaultProfileName:  {{ .Values.scaling.rbac.psp.appArmorProfile | quote }}
+      {{- end }}
+    {{- end }}
+spec:
+  privileged: false
+  # Required to prevent escalations to root.
+  allowPrivilegeEscalation: false
+  # This is redundant with non-root + disallow privilege escalation,
+  # but we can provide it for defense in depth.
+  requiredDropCapabilities:
+  - ALL
+  # Allow core volume types.
+  volumes:
+  - 'secret'
+  hostNetwork: {{ .Values.hostNetwork }}
+  {{- if .Values.hostNetwork }}
+  hostPorts:
+  - min: 10101
+    max: 10101
+  {{- end }}
+  hostIPC: false
+  hostPID: false
+  runAsUser:
+    # Require the container to run without root privileges.
+    rule: 'MustRunAsNonRoot'
+  seLinux:
+    # This policy assumes the nodes are using AppArmor rather than SELinux.
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+    # Forbid adding the root group.
+    - min: 1
+      max: 65535
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+    # Forbid adding the root group.
+    - min: 1
+      max: 65535
+  readOnlyRootFilesystem: false
+{{- end -}}

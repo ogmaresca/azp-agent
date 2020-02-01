@@ -105,13 +105,16 @@ azp:
   # Extra volume mounts to add to the pipeline agents container
   extraVolumeMounts: []
 
+  ## Security Context policies for the agent container
+  securityContext: {}
+
 docker:
   ## Whether to enable the Docker sidecar
   enabled: true
 
   image:
     repository: docker
-    tag: 19.03.1-dind
+    tag: 19.03.5-dind
     pullPolicy: IfNotPresent
   
   resources:
@@ -161,6 +164,10 @@ docker:
   # Extra volume mounts to add to the Docker container
   extraVolumeMounts: []
 
+  ## Security Context policies for the agent container
+  securityContext:
+    privileged: true
+
 
 imagePullSecrets: []
 
@@ -179,6 +186,45 @@ pdb:
   enabled: true
   minAvailable: 50%
   #maxUnavailable: 50%
+
+rbac:
+  psp:
+    ## Create a PodSecurityPolicy
+    enabled: false
+    ## Override the PodSecurityPolicy name
+    # name:
+    ## Labels to add to the PodSecurityPolicy
+    labels: {}
+    ## Annotations to add to the PodSecurityPolicy
+    annotations: {}
+    ## Enforce AppArmor in created PodSecurityPolicy
+    appArmorProfile: 'default/runtime'
+    ## Enforce seccomp in created PodSecurityPolicy
+    seccompProfile: 'docker/runtime'
+    ## Capabilities to allow in PodSecurityPolicy
+    allowedCapabilities:
+    - '*'
+    ## Enable hostIPC in the PodSecurityPolicy
+    hostIPC: false
+    ## Enable hostPID in the PodSecurityPolicy
+    hostPID: false
+    ## Volumes to allow in PodSecurityPolicy
+    volumes:
+    - '*'
+    ## Add allowed flex volumes in the PodSecurityPolicy
+    allowedFlexVolumes: []
+
+
+serviceAccount:
+  ## Specifies whether a ServiceAccount should be created
+  create: false
+  ## The name of the ServiceAccount to use.
+  ## If not set and create is true, a name is generated using the fullname template
+  name:
+  ## Labels to add to the ServiceAccount
+  labels: {}
+  ## Annotations to add to the ServiceAccount
+  annotations: {}
 
 ## Values for autoscaling
 scaling:
@@ -235,12 +281,30 @@ scaling:
     getConfigmaps: false
     getSecrets: false
 
+    psp:
+      ## Create a PodSecurityPolicy
+      enabled: false
+      ## Override the PodSecurityPolicy name
+      # name:
+      ## Labels to add to the PodSecurityPolicy
+      labels: {}
+      ## Annotations to add to the PodSecurityPolicy
+      annotations: {}
+      ## Enforce AppArmor in created PodSecurityPolicy
+      appArmorProfile: 'default/runtime'
+      ## Enforce seccomp in created PodSecurityPolicy
+      seccompProfile: 'docker/runtime'
+
   serviceAccount:
     ## Specifies whether a ServiceAccount should be created
     create: true
     ## The name of the ServiceAccount to use.
     ## If not set and create is true, a name is generated using the fullname template
     name:
+    ## Labels to add to the ServiceAccount
+    labels: {}
+    ## Annotations to add to the ServiceAccount
+    annotations: {}
   
   ## Create a Prometheus-Operator ServiceMonitor for the Autoscaler
   ## Ref: https://github.com/helm/charts/blob/master/stable/prometheus-operator/templates/prometheus-operator/crd-servicemonitor.yaml

@@ -1,0 +1,52 @@
+{{- if .Values.rbac.psp.enabled }}
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: {{ include "azp-agent.psp.name" . }}
+  labels:
+    {{- include "azp-agent.labels" . | nindent 4 }}
+    component: agent
+    {{- include "azp-agent.stringDict" .Values.rbac.psp.labels | nindent 4 }}
+  annotations:
+    {{- include "azp-agent.stringDict" .Values.rbac.psp.annotations | nindent 4 }}
+    {{- if .Values.rbac.psp.seccompProfile }}
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames:  {{ .Values.rbac.psp.seccompProfile | quote }}
+      {{- if ne .Values.rbac.psp.seccompProfile "*" }}
+    seccomp.security.alpha.kubernetes.io/defaultProfileName:  {{ .Values.rbac.psp.seccompProfile | quote }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.rbac.psp.appArmorProfile }}
+    apparmor.security.beta.kubernetes.io/allowedProfileNames:  {{ .Values.rbac.psp.appArmorProfile | quote }}
+      {{- if ne .Values.rbac.psp.appArmorProfile "*" }}
+    apparmor.security.beta.kubernetes.io/defaultProfileName:  {{ .Values.rbac.psp.appArmorProfile | quote }}
+      {{- end }}
+    {{- end }}
+spec:
+  privileged: {{ .Values.docker.enabled }}
+  allowPrivilegeEscalation: true
+  allowedCapabilities:
+    {{- .Values.rbac.psp.allowedCapabilities | toYaml | nindent 4 }}
+  volumes:
+    {{- .Values.rbac.psp.volumes | toYaml | nindent 4 }}
+  {{- if .Values.rbac.psp.allowedFlexVolumes }}
+  allowedFlexVolumes:
+    {{- .Values.rbac.psp.allowedFlexVolumes | toYaml | nindent 4 }}
+  {{- end }}
+  hostNetwork: {{ .Values.hostNetwork }}
+  {{- if .Values.hostNetwork }}
+  hostPorts:
+  - min: 1
+    max: 65535
+  {{- end }}
+  hostIPC: {{ .Values.rbac.psp.hostIPC }}
+  hostPID: {{ .Values.rbac.psp.hostPID }}
+  runAsUser:
+    rule: 'RunAsAny'
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
+  readOnlyRootFilesystem: false
+{{- end -}}
