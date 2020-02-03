@@ -36,7 +36,7 @@ spec:
       imagePullSecrets:
         {{- .Values.imagePullSecrets | toYaml | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "azp-agent.autoscaler.serviceAccountName" . }}
+      serviceAccountName: {{ include "azp-agent.serviceAccountName" . }}
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.azp.image.repository }}:{{ .Values.azp.image.tag }}"
