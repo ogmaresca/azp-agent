@@ -32,8 +32,8 @@ spec:
   # Allow core volume types.
   volumes:
   - 'secret'
-  hostNetwork: {{ .Values.hostNetwork }}
-  {{- if .Values.hostNetwork }}
+  hostNetwork: {{ .Values.scaling.hostNetwork }}
+  {{- if .Values.scaling.hostNetwork }}
   hostPorts:
   - min: 10101
     max: 10101

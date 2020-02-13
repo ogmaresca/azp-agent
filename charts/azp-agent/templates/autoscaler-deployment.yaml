@@ -26,7 +26,7 @@ spec:
     spec:
       {{- if .Values.scaling.image.pullSecrets }}
       imagePullSecrets:
-        {{- .Values.imagePullSecrets | toYaml | nindent 8 }}
+        {{- .Values.scaling.imagePullSecrets | toYaml | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "azp-agent.autoscaler.serviceAccountName" . }}
       containers:
@@ -89,47 +89,47 @@ spec:
         {{- .Values.scaling.initContainers | toYaml | nindent 8 }}
       {{- end }}
       
-      {{- if .Values.activeDeadlineSeconds }}
-      activeDeadlineSeconds: {{ .Values.activeDeadlineSeconds }}
+      {{- if .Values.scaling.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ .Values.scaling.activeDeadlineSeconds }}
       {{- end }}
-      {{- if .Values.dnsPolicy }}
-      dnsPolicy: {{ .Values.dnsPolicy }}
+      {{- if .Values.scaling.dnsPolicy }}
+      dnsPolicy: {{ .Values.scaling.dnsPolicy }}
       {{- end }}
-      {{ if .Values.dnsConfig }}
+      {{ if .Values.scaling.dnsConfig }}
       dnsConfig:
-        {{- .Values.dnsConfig | toYaml | nindent 8 }}
+        {{- .Values.scaling.dnsConfig | toYaml | nindent 8 }}
       {{- end }}
       restartPolicy: {{ .Values.scaling.restartPolicy }}
-      {{- if .Values.nodeSelector }}
+      {{- if .Values.scaling.nodeSelector }}
       nodeSelector:
-        {{- .Values.nodeSelector | toYaml | nindent 8 }}
+        {{- .Values.scaling.nodeSelector | toYaml | nindent 8 }}
       {{- end }}
-      {{- if .Values.affinity }}
+      {{- if .Values.scaling.affinity }}
       affinity:
-        {{- .Values.affinity | toYaml | nindent 8 }}
+        {{- .Values.scaling.affinity | toYaml | nindent 8 }}
       {{- end }}
-      {{- if .Values.tolerations }}
+      {{- if .Values.scaling.tolerations }}
       tolerations:
-        {{- .Values.tolerations | toYaml | nindent 8 }}
+        {{- .Values.scaling.tolerations | toYaml | nindent 8 }}
       {{- end }}
       {{- if .Values.scaling.securityContext }}
       securityContext:
         {{- .Values.scaling.securityContext | toYaml | nindent 8 }}
       {{- end }}
-      hostNetwork: {{ .Values.hostNetwork }}
-      {{- if .Values.priority }}
-      priority: {{ .Value.priority }}
+      hostNetwork: {{ .Values.scaling.hostNetwork }}
+      {{- if .Values.scaling.priority }}
+      priority: {{ .Value.scaling.priority }}
       {{- end }}
-      {{- if .Values.priorityClassName }}
-      priorityClassName: {{ .Value.priorityClassName | quote }}
+      {{- if .Values.scaling.priorityClassName }}
+      priorityClassName: {{ .Value.scaling.priorityClassName | quote }}
       {{- end }}
-      {{- if .Values.priority }}
-      priority: {{ .Values.priority }}
+      {{- if .Values.scaling.priority }}
+      priority: {{ .Values.scaling.priority }}
       {{- end }}
-      {{- if .Values.runtimeClassName }}
-      runtimeClassName: {{ .Value.runtimeClassName | quote }}
+      {{- if .Values.scaling.runtimeClassName }}
+      runtimeClassName: {{ .Value.scaling.runtimeClassName | quote }}
       {{- end }}
-      {{- if .Values.schedulerName }}
-      schedulerName: {{ .Value.schedulerName | quote }}
+      {{- if .Values.scaling.schedulerName }}
+      schedulerName: {{ .Value.scaling.schedulerName | quote }}
       {{- end }}
 {{- end }}
