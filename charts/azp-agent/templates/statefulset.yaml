@@ -215,6 +215,10 @@ spec:
         {{- $dockerClean := (and .Values.docker.persistence.enabled .Values.docker.clean) }}
         {{- if or .Values.docker.lifecycle $dockerClean }}
         lifecycle:
+          {{- if semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion }}
+          # https://banzaicloud.com/blog/k8s-sidecars/
+          type: SideCar
+          {{- end }}
           {{- if .Values.docker.lifecycle.postStart }}
           postStart:
             {{- .Values.docker.lifecycle.postStart | toYaml | nindent 12 }}
