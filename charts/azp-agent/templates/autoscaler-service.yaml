@@ -1,4 +1,4 @@
-{{- if and .Values.scaling.enabled (empty .Values.scaling.cpu) .Values.scaling.serviceMonitor.enabled }}
+{{- if and .Values.scaling.enabled (empty .Values.scaling.cpu) }}
 apiVersion: v1
 kind: Service
 metadata:

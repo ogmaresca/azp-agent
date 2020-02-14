@@ -60,7 +60,13 @@ spec:
           value: {{ .Values.azp.hostedToolCache | quote }}
         {{- if .Values.docker.enabled }}
         - name: DOCKER_HOST
-          value: "tcp://localhost:2375"
+          value: {{ printf "tcp://localhost:%s" (.Values.docker.tls | ternary "2376" "2375") }}
+          {{- if .Values.docker.tls }}
+        - name: DOCKER_TLS_CERTDIR
+          value: /docker-certs
+          {{- end }}
+        - name: DOCKER_TLS_VERIFY
+          value: {{ .Values.docker.tls | ternary "1" "" | quote }}
         {{- end }}
         - name: DEBIAN_FRONTEND
           value: 'noninteractive'
@@ -78,10 +84,17 @@ spec:
           value: {{ .value | required (printf "A value is required for environment variable %s" .name) | quote }}
           {{- end }}
         {{- end }}
-        {{- if .Values.azp.useStartupScript }}
+        {{- if .Values.azp.command }}
+        command:
+          {{ .Values.azp.command | toYaml | nindent 8 }}
+        {{- else if .Values.azp.useStartupScript }}
         workingDir: /azp
         command:
         - '/azp/start.sh'
+        {{- end }}
+        {{- if .Values.azp.args }}
+        args:
+          {{ .Values.azp.args | toYaml | nindent 8 }}
         {{- end }}
         {{- with .Values.azp.resources }}
         resources:
@@ -114,6 +127,16 @@ spec:
           subPath: {{ .Values.azp.existingSecretKey | quote }}
           {{- end }}
           readOnly: true
+        {{- if and .Values.docker.enabled .Values.docker.tls }}
+        - name: docker-certs
+          mountPath: /docker-certs/client
+          subPath: client
+          readOnly: true
+        - name: docker-certs
+          mountPath: /root/.docker
+          subPath: client
+          readOnly: true
+        {{- end }}
         {{- if .Values.azp.extraVolumeMounts }}
           {{- .Values.azp.extraVolumeMounts | toYaml | nindent 8 }}
         {{- end }}
@@ -132,8 +155,10 @@ spec:
         imagePullPolicy: {{ .Values.docker.image.pullPolicy }}
         ports:
         - name: docker-daemon
-          containerPort: 2375
+          containerPort: {{ .Values.docker.tls | ternary 2376 2375 }}
         env:
+        - name: DOCKER_TLS_CERTDIR
+          value: {{ .Values.docker.tls | ternary "/docker-certs" "" | quote }}
         {{- range .Values.docker.extraEnv }}
         - name: {{ .name | quote }}
           {{- if .secret }}
@@ -147,6 +172,14 @@ spec:
           {{- else }}
           value: {{ .value | required (printf "A value is required for environment variable %s" .name) | quote }}
           {{- end }}
+        {{- end }}
+        {{- if .Values.docker.command }}
+        command:
+          {{ .Values.docker.command | toYaml | nindent 8 }}
+        {{- end }}
+        {{- if .Values.docker.args }}
+        args:
+          {{ .Values.docker.args | toYaml | nindent 8 }}
         {{- end }}
         {{- if .Values.docker.securityContext }}
         securityContext:
@@ -162,6 +195,10 @@ spec:
           {{- if $combinePVT }}
           subPath: 'docker'
           {{- end }}
+        {{- if .Values.docker.tls }}
+        - name: docker-certs
+          mountPath: /docker-certs
+        {{- end }}
         {{- if .Values.docker.extraVolumeMounts }}
           {{- .Values.docker.extraVolumeMounts | toYaml | nindent 8 }}
         {{- end }}
@@ -226,6 +263,10 @@ spec:
           - key: {{ .Values.azp.existingSecretKey | quote }}
             path: {{ .Values.azp.existingSecretKey | quote }}
           {{- end }}
+      {{- if and .Values.docker.enabled .Values.docker.tls }}
+      - name: docker-certs
+        emptyDir: {}
+      {{- end }}
       {{- if .Values.extraVolumes }}
         {{- .Values.extraVolumes | toYaml | nindent 6 }}
       {{- end }}

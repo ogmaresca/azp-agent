@@ -33,10 +33,10 @@ spec:
     {{- .Values.rbac.psp.allowedFlexVolumes | toYaml | nindent 4 }}
   {{- end }}
   hostNetwork: {{ .Values.hostNetwork }}
-  {{- if .Values.hostNetwork }}
+  {{- if and .Values.hostNetwork .Values.docker.enabled }}
   hostPorts:
-  - min: 1
-    max: 65535
+  - min: {{ .Values.docker.tls | ternary 2376 2375 }}
+    max: {{ .Values.docker.tls | ternary 2376 2375 }}
   {{- end }}
   hostIPC: {{ .Values.rbac.psp.hostIPC }}
   hostPID: {{ .Values.rbac.psp.hostPID }}

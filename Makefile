@@ -7,6 +7,9 @@ template:
 template-default-values:
 	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl
 
+template-docker-tls-disabled:
+	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,docker.tls=false
+
 template-no-persistence:
 	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,azp.persistence.enabled=false,docker.persistence.enabled=false
 
@@ -47,6 +50,7 @@ test:
 	make lint && \
 	make template && \
 	make template-default-values && \
+	make template-docker-tls-disabled && \
 	make template-no-persistence && \
 	make template-no-docker && \
 	make template-persistence && \

@@ -38,6 +38,7 @@ azp:
   ## If true, use the start.sh script from Microsoft
   ## It will create a ConfigMap with the script, set the working directory, and use the script as the command
   ## If false, the image should already have this script in it
+  ## If command is set, this is ignored
   useStartupScript: false
 
   ## The path of the Hosted Tool Cache
@@ -47,6 +48,9 @@ azp:
     repository: docker.io/gmaresca/azure-pipeline-agent
     tag: ubuntu-18.04
     pullPolicy: IfNotPresent
+  
+  command: []
+  args: []
   
   resources:
     requests:
@@ -116,6 +120,12 @@ docker:
     repository: docker
     tag: 19.03.5-dind
     pullPolicy: IfNotPresent
+  
+  command: []
+  args: []
+  
+  ## Enable TLS for Docker (19.03+)
+  tls: true
   
   resources:
     requests:
@@ -247,7 +257,7 @@ scaling:
 
   image:
     repository: docker.io/gmaresca/azp-agent-autoscaler
-    tag: 1.0.9
+    tag: 1.0.10
     pullPolicy: IfNotPresent
   
   resources:
@@ -341,7 +351,11 @@ scaling:
   affinity: {}
   
   ## Security Context policies for the autoscaler pod
-  securityContext: {}
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 2000
+    fsGroup: 3000
 
   lifecycle: []
 
