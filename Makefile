@@ -26,10 +26,10 @@ template-docker-no-clean:
 	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,azp.persistence.enabled=true,docker.persistence.enabled=true,docker.clean=false
 
 template-docker-lifecycle:
-	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,azp.persistence.enabled=true,docker.persistence.enabled=true,docker.clean=true,docker.lifecycle.postStart.tcpSocket.port=1337
+	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,azp.persistence.enabled=true,docker.persistence.enabled=true,docker.clean=true,docker.lifecycle.preStop .tcpSocket.port=1337
 
 template-docker-lifecycle-fail:
-	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,azp.persistence.enabled=true,docker.persistence.enabled=true,docker.clean=true,docker.lifecycle.postStart.exec.command={sh,-c,ls}
+	helm template charts/azp-agent --set azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,azp.persistence.enabled=true,docker.persistence.enabled=true,docker.clean=true,docker.lifecycle.preStop.exec.command={sh,-c,ls}
 
 template-env-secret:
 	helm template charts/azp-agent --set 'azp.url=https://dev.azure.com/test,azp.token=abc123def456ghi789jkl,azp.extraEnv[0].name=SUPER_SECRET_PASSWORD,azp.extraEnv[0].value=P@$$W0RD,azp.extraEnv[0].secret=true'
@@ -68,7 +68,7 @@ test-versions:
 	bash -c 'for chart in charts/*.tgz; do helm lint $$chart; done'
 
 install:
-	helm upgrade --debug --install azp-agent charts/azp-agent --set azp.url=${AZURE_DEVOPS_URL},azp.token=${AZURE_DEVOPS_TOKEN},azp.pool=${AZURE_DEVOPS_POOl},replicaCount=1,scaling.enabled=true,scaling.logLevel=trace,scaling.serviceMonitor.enabled=true,scaling.grafanaDashboard.enabled=true
+	helm upgrade --debug --install azp-agent charts/azp-agent --values example-helm-values.yaml --set azp.url=${AZURE_DEVOPS_URL},azp.token=${AZURE_DEVOPS_TOKEN},azp.pool=${AZURE_DEVOPS_POOl},azp.persistence.enabled=false,docker.persistence.enabled=false,replicaCount=1,scaling.logLevel=trace
 
 package:
 	helm package charts/azp-agent -d charts && \

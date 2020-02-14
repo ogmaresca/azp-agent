@@ -11,6 +11,8 @@ docker:
   persistence:
     enabled: true
     name: workspace
+  liveness:
+    enabled: true
 
 rbac:
   psp:

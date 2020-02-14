@@ -157,6 +157,16 @@ docker:
     ## If set, the storage limit to set on the PersistentVolumeClaims
     #storageLimit: 500Gi
   
+  ## Liveness probe values
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes
+  liveness:
+    enabled: false
+    failureThreshold: 3
+    initialDelaySeconds: 1
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  
   lifecycle: {}
 
   ## Prune containers and images on start, if persistence is enabled

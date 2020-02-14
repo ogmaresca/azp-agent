@@ -202,14 +202,28 @@ spec:
         {{- if .Values.docker.extraVolumeMounts }}
           {{- .Values.docker.extraVolumeMounts | toYaml | nindent 8 }}
         {{- end }}
+        {{- if .Values.docker.liveness.enabled }}
+        livenessProbe:
+          tcpSocket:
+            port: docker-daemon
+          failureThreshold: {{ .Values.docker.liveness.failureThreshold }}
+          initialDelaySeconds: {{ .Values.docker.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.docker.liveness.periodSeconds }}
+          successThreshold: {{ .Values.docker.liveness.successThreshold }}
+          timeoutSeconds: {{ .Values.docker.liveness.timeoutSeconds }}
+        {{- end }}
         {{- $dockerClean := (and .Values.docker.persistence.enabled .Values.docker.clean) }}
         {{- if or .Values.docker.lifecycle $dockerClean }}
         lifecycle:
-          {{- if $dockerClean }}
+          {{- if .Values.docker.lifecycle.postStart }}
           postStart:
-            {{- if .Values.docker.lifecycle.postStart }}
-              {{ range $key, $value := .Values.docker.lifecycle.postStart }}
-                {{- if eq $key "exec" }}{{ fail "Cannot define a postStart command if docker.clean is true!" }}{{- else }}
+            {{- .Values.docker.lifecycle.postStart | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if $dockerClean }}
+          preStop:
+            {{- if .Values.docker.lifecycle.preStop }}
+              {{ range $key, $value := .Values.docker.lifecycle.preStop }}
+                {{- if eq $key "exec" }}{{ fail "Cannot define a preStop command if docker.clean is true!" }}{{- else }}
             {{ $key }}:
               {{- $value | toYaml | nindent 14 }}
                 {{- end }}
@@ -220,11 +234,7 @@ spec:
               - sh
               - -c
               - "docker system prune -f"
-          {{- else if .Values.docker.lifecycle.postStart }}
-          postStart:
-            {{- .Values.docker.lifecycle.postStart | toYaml | nindent 12 }}
-          {{- end }}
-          {{- if .Values.docker.lifecycle.preStop }}
+          {{- else if .Values.docker.lifecycle.preStop }}
           preStop:
             {{- .Values.docker.lifecycle.preStop | toYaml | nindent 12 }}
           {{- end }}
@@ -240,7 +250,7 @@ spec:
       - name: {{ .Values.azp.persistence.name | quote }}
         emptyDir: {}
       {{- end }}
-      {{- if and .Values.docker.enabled (not .Values.docker.persistence.enabled) }}
+      {{- if and .Values.docker.enabled (not .Values.docker.persistence.enabled) (ne .Values.azp.persistence.name .Values.docker.persistence.name) }}
       - name: {{ .Values.docker.persistence.name | quote }}
         emptyDir: {}
       {{- end }}
