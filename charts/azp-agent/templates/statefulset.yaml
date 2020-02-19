@@ -62,7 +62,7 @@ spec:
         - name: DOCKER_HOST
           value: {{ printf "tcp://localhost:%s" (.Values.docker.tls | ternary "2376" "2375") }}
           {{- if .Values.docker.tls }}
-        - name: DOCKER_TLS_CERTDIR
+        - name: DOCKER_CERT_PATH
           value: /docker-certs
           {{- end }}
         - name: DOCKER_TLS_VERIFY
@@ -129,11 +129,7 @@ spec:
           readOnly: true
         {{- if and .Values.docker.enabled .Values.docker.tls }}
         - name: docker-certs
-          mountPath: /docker-certs/client
-          subPath: client
-          readOnly: true
-        - name: docker-certs
-          mountPath: /root/.docker
+          mountPath: /docker-certs
           subPath: client
           readOnly: true
         {{- end }}
