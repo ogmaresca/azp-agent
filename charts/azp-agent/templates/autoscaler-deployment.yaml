@@ -79,6 +79,11 @@ spec:
         lifecycle:
           {{- .Values.scaling.lifecycle | toYaml | nindent 10 }}
         {{- end }}
+        {{- if .Values.securityContext }}
+        securityContext:
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: {{ not .Values.securityContext.runAsNonRoot }}
+        {{- end }}
       
       {{- if .Values.scaling.sidecars }}
         {{- .Values.scaling.sidecars | toYaml | nindent 6 }}
