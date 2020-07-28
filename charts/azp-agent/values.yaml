@@ -71,8 +71,9 @@ azp:
     - kubectl
     - kompose
     - docker
-    - dncr ## .NET Core Runtime
-    - dncs ## .NET Core SDK
+    - dncr ## .NET Core Runtime UseDotNet@1
+    - dncs ## .NET Core SDK UseDotNet@1
+    - dotnet ## .NET Core UseDotNet@2
     - NuGet
     - VsTest
     - node
