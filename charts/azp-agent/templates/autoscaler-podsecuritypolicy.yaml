@@ -1,5 +1,5 @@
 {{- if and .Values.scaling.enabled (empty .Values.scaling.cpu) .Values.scaling.rbac.psp.enabled }}
-apiVersion: policy/v1beta1
+apiVersion: policy/v1{{ if semverCompare "<1.21.0" .Capabilities.KubeVersion.Version }}beta1{{ end }}
 kind: PodSecurityPolicy
 metadata:
   name: {{ include "azp-agent.autoscaler.psp.name" . }}
