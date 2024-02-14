@@ -3,5 +3,5 @@ description: A Helm chart for Azure Pipeline Agents
 name: azp-agent
 version: 1.4.6
 urls:
-- https://github.com/darthmolen/azp-agent
+- https://github.com/ggmaresca/azp-agent
 - https://github.com/ggmaresca/azp-agent-autoscaler
